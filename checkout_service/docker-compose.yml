@@ -1,0 +1,42 @@
+version: "3"
+services:
+ checkout-mysql:
+  image: library/mysql:8.0
+  container_name: 'checkout-mysql'
+  restart: always
+  ports:
+    - 3309:3306
+  environment:
+   MYSQL_ROOT_PASSWORD: 123456
+   MYSQL_DATABASE: maccshop
+   MYSQL_USER: root
+   MYSQL_PASSWORD: root
+  volumes:
+   - ./data/mysql:/var/lib/mysql
+
+ phpmyadmin:
+  container_name: 'checkout-phpmyadmin'
+  image: phpmyadmin/phpmyadmin
+  environment:
+   PMA_HOST: checkout-mysql
+   PMA_PORT: 3306
+  ports:
+   - 8084:80
+  volumes:
+   - /sessions
+ 
+ checkout-service:
+  build: ./checkout
+  container_name: 'checkout-service'
+  restart: always
+  volumes:
+   - ./checkout:/usr/src/app
+  ports:
+   - 5004:80
+  depends_on:
+   - checkout-mysql
+
+networks:
+  default:
+    external:
+      name: product_service_microservices

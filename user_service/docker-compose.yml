@@ -1,0 +1,42 @@
+version: "3"
+services:
+ user-mysql:
+  image: library/mysql:8.0
+  container_name: 'user-mysql'
+  restart: always
+  ports:
+    - 3310:3306
+  environment:
+   MYSQL_ROOT_PASSWORD: 123456
+   MYSQL_DATABASE: maccshop
+   MYSQL_USER: root
+   MYSQL_PASSWORD: root
+  volumes:
+   - ./data/mysql:/var/lib/mysql
+
+ phpmyadmin:
+  container_name: 'user-phpmyadmin'
+  image: phpmyadmin/phpmyadmin
+  environment:
+   PMA_HOST: user-mysql
+   PMA_PORT: 3306
+  ports:
+   - 8085:80
+  volumes:
+   - /sessions
+ 
+ user-service:
+  build: ./user
+  container_name: 'user-service'
+  restart: always
+  volumes:
+   - ./user:/usr/src/app
+  ports:
+   - 5005:80
+  depends_on:
+   - user-mysql
+
+networks:
+  default:
+    external:
+      name: product_service_microservices

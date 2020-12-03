@@ -1,0 +1,42 @@
+version: "3"
+services:
+ cart-mysql:
+  image: library/mysql:8.0
+  container_name: 'cart-mysql'
+  restart: always
+  ports:
+    - 3311:3306
+  environment:
+   MYSQL_ROOT_PASSWORD: 123456
+   MYSQL_DATABASE: maccshop
+   MYSQL_USER: root
+   MYSQL_PASSWORD: root
+  volumes:
+   - ./data/mysql:/var/lib/mysql
+
+ phpmyadmin:
+  container_name: 'cart-phpmyadmin'
+  image: phpmyadmin/phpmyadmin
+  environment:
+   PMA_HOST: cart-mysql
+   PMA_PORT: 3306
+  ports:
+   - 8086:80
+  volumes:
+   - /sessions
+ 
+ cart-service:
+  build: ./cart
+  container_name: 'cart-service'
+  restart: always
+  volumes:
+   - ./cart:/usr/src/app
+  ports:
+   - 5006:80
+  depends_on:
+   - cart-mysql
+
+networks:
+  default:
+    external:
+      name: product_service_microservices
