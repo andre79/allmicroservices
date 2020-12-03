@@ -19,13 +19,13 @@ services:
  phpmyadmin:
   container_name: 'product-phpmyadmin'
   image: phpmyadmin/phpmyadmin
-  networks:
-   - microservices
   environment:
    PMA_HOST: product-mysql
    PMA_PORT: 3306
   ports:
    - 8081:80
+  networks:
+   - microservices
   volumes:
    - /sessions
  
@@ -33,12 +33,12 @@ services:
   build: ./product
   container_name: 'product-service'
   restart: always
+  networks:
+   - microservices
   volumes:
    - ./product:/usr/src/app
   ports:
    - 5001:80
-  networks:
-   - microservices
   depends_on:
    - product-mysql
 

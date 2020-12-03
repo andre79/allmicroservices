@@ -11,6 +11,8 @@ services:
    MYSQL_DATABASE: maccshop
    MYSQL_USER: root
    MYSQL_PASSWORD: root
+  networks:
+   - microservices
   volumes:
    - ./data/mysql:/var/lib/mysql
 
@@ -22,6 +24,8 @@ services:
    PMA_PORT: 3306
   ports:
    - 8083:80
+  networks:
+   - microservices
   volumes:
    - /sessions
  
@@ -29,6 +33,8 @@ services:
   build: ./delivery
   container_name: 'delivery-service'
   restart: always
+  networks:
+   - microservices
   volumes:
    - ./delivery:/usr/src/app
   ports:
@@ -37,6 +43,8 @@ services:
    - delivery-mysql
 
 networks:
-  default:
-    external:
-      name: product_service_microservices
+ microservices:
+#networks:
+#  default:
+#    external:
+#      name: product_service_microservices
