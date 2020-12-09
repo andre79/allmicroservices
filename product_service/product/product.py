@@ -16,7 +16,6 @@ class Product(db.Model):
     title = db.Column(db.String(255))
     productDescription = db.Column(db.String(100))
     productBrand = db.Column(db.String(20))
-    amounth = db.Column(db.Integer)
     price = db.Column(db.Integer)
 
     def create(self):

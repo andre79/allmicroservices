@@ -13,19 +13,21 @@ db = SQLAlchemy(app)
 class User(db.Model):
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user = db.Column(db.String(255))
+    password = db.Column(db.String(255))
     name = db.Column(db.String(255))
-    login = db.Column(db.String(255))
-    password = db.Column(db.String(8))
+    email = db.Column(db.String(255))
 
     def create(self):
         db.session.add(self)
         db.session.commit()
         return self
 
-    def __init__(self, name, login, password):
-        self.name = name
-        self.login = login
+    def __init__(self, user, password, name, email):
+        self.user = user
         self.password = password
+        self.name = name
+        self.email = email
 
     def __repr__(self):
         return '' % self.id
@@ -40,9 +42,10 @@ class UserSchema(ModelSchema):
         sqla_session = db.session
 
     id = fields.Number(dump_only=True)
-    name = fields.String(required=True)
-    login = fields.String(required=True)
+    user = fields.String(required=True)
     password = fields.String(required=True)
+    name = fields.String(required=True)
+    email = fields.String(required=True)
 
 
 @app.route('/user', methods=['GET'])
@@ -65,15 +68,17 @@ def get_user_by_id(id):
 def update_user_by_id(id):
     data = request.get_json()
     get_user = User.query.get(id)
-    if data.get('name'):
-        get_user.name = data['name']
-    if data.get('login'):
-        get_user.login = data['login']
+    if data.get('user'):
+        get_user.user = data['user']
     if data.get('password'):
         get_user.password = data['password']
+    if data.get('name'):
+        get_user.name = data['name']
+    if data.get('email'):
+        get_user.email = data['email']
     db.session.add(get_user)
     db.session.commit()
-    user_schema = UserSchema(only=['id', 'name', 'login', 'password'])
+    user_schema = UserSchema(only=['id', 'user', 'password', 'name', 'email'])
     user = user_schema.dump(get_user)
     return make_response(jsonify({"user": user}))
 
