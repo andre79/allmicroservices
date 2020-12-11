@@ -65,7 +65,7 @@ def get_user_by_id(id):
     user = user_schema.dump(get_user)
     return make_response(jsonify({"user": user}))
 
-@app.route('/user/auth/', methods=['POST'])
+@app.route('/user/auth', methods=['POST'])
 def get_user_by_login():
     user = request.json["user"]
     password = request.json["password"]

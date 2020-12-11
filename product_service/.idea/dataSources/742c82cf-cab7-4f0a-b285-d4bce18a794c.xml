@@ -924,17 +924,22 @@ SELECT|sys.sys_config
     </column>
     <column id="287" parent="284" name="price">
       <Position>3</Position>
-      <DataType>varchar(20)|0s</DataType>
+      <DataType>varchar(100)|0s</DataType>
     </column>
     <column id="288" parent="284" name="old_price">
       <Position>4</Position>
-      <DataType>varchar(20)|0s</DataType>
+      <DataType>varchar(100)|0s</DataType>
     </column>
     <column id="289" parent="284" name="image_thumb">
       <Position>5</Position>
-      <DataType>varchar(20)|0s</DataType>
+      <DataType>varchar(255)|0s</DataType>
     </column>
-    <key id="290" parent="284" name="PRIMARY">
+    <column id="290" parent="284" name="category">
+      <Position>6</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <key id="291" parent="284" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>

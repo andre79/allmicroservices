@@ -19,17 +19,19 @@ class Product(db.Model):
     price       = db.Column(db.String(100))
     old_price   = db.Column(db.String(100))
     image_thumb = db.Column(db.String(255))
+    category    = db.Column(db.String(255))
 
     def create(self):
         db.session.add(self)
         db.session.commit()
         return self
 
-    def __init__(self, name, price, old_price, image_thumb):
+    def __init__(self, name, price, old_price, image_thumb, category):
         self.name        = name
         self.price       = price
         self.old_price   = old_price
         self.image_thumb = image_thumb
+        self.category = category
 
 
     def __repr__(self):
@@ -44,11 +46,12 @@ class ProductSchema(ModelSchema):
         model = Product
         sqla_session = db.session
 
-    id = fields.Number(dump_only=True)
-    name = fields.String(required=True)
-    price = fields.String(required=True)
-    old_price = fields.String(required=True)
+    id          = fields.Number(dump_only=True)
+    name        = fields.String(required=True)
+    price       = fields.String(required=True)
+    old_price   = fields.String(required=True)
     image_thumb = fields.String(required=True)
+    category    = fields.String(required=True)
 
 
 @app.route('/products', methods=['GET'])
@@ -66,6 +69,12 @@ def get_product_by_id(id):
     product = product_schema.dump(get_product)
     return make_response(jsonify({"product": product}))
 
+@app.route('/products/category/<category>', methods=['GET'])
+def get_product_by_category(category):
+    product_schema = ProductSchema(many=True)
+    get_product = Product.query.filter(Product.category == category).all()
+    productReturn = product_schema.dump(get_product)
+    return make_response(jsonify({"product": productReturn}))
 
 @app.route('/products/<id>', methods=['PUT'])
 def update_product_by_id(id):
@@ -79,9 +88,11 @@ def update_product_by_id(id):
         get_product.old_price = data['old_price']
     if data.get('image_thumb'):
         get_product.image_thumb = data['image_thumb']
+    if data.get('category'):
+        get_product.image_thumb = data['category']
     db.session.add(get_product)
     db.session.commit()
-    product_schema = ProductSchema(only=['id', 'name', 'price', 'old_price', 'image_thumb'])
+    product_schema = ProductSchema(only=['id', 'name', 'price', 'old_price', 'image_thumb', 'category'])
     product = product_schema.dump(get_product)
     return make_response(jsonify({"product": product}))
 
