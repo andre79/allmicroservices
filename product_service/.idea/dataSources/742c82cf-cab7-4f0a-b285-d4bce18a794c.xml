@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataSource name="maccshop@localhost">
-  <database-model serializer="dbm" dbms="MYSQL" family-id="MYSQL" format-version="4.19">
+  <database-model serializer="dbm" dbms="MYSQL" family-id="MYSQL" format-version="4.20">
     <root id="1">
       <ServerVersion>8.0.22</ServerVersion>
       <DefaultEngine>InnoDB</DefaultEngine>
@@ -890,15 +890,15 @@ SYSTEM_USER
       <Host>localhost</Host>
       <ObjectGrants>SHUTDOWN,SUPER
 BACKUP_ADMIN,CLONE_ADMIN,CONNECTION_ADMIN,PERSIST_RO_VARIABLES_ADMIN,SESSION_VARIABLES_ADMIN,SYSTEM_USER,SYSTEM_VARIABLES_ADMIN
-SELECT|performance_schema:null
-SELECT|mysql.user:null
+SELECT|performance_schema
+SELECT|mysql.user
 </ObjectGrants>
     </user>
     <user id="281" parent="1" name="mysql.sys">
       <Host>localhost</Host>
       <ObjectGrants>SYSTEM_USER
-TRIGGER|sys:null
-SELECT|sys.sys_config:null
+TRIGGER|sys
+SELECT|sys.sys_config
 </ObjectGrants>
     </user>
     <user id="282" parent="1" name="root">
@@ -918,21 +918,21 @@ SELECT|sys.sys_config:null
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="286" parent="284" name="title">
+    <column id="286" parent="284" name="name">
       <Position>2</Position>
       <DataType>varchar(255)|0s</DataType>
     </column>
-    <column id="287" parent="284" name="productDescription">
+    <column id="287" parent="284" name="price">
       <Position>3</Position>
-      <DataType>varchar(100)|0s</DataType>
+      <DataType>varchar(20)|0s</DataType>
     </column>
-    <column id="288" parent="284" name="productBrand">
+    <column id="288" parent="284" name="old_price">
       <Position>4</Position>
       <DataType>varchar(20)|0s</DataType>
     </column>
-    <column id="289" parent="284" name="price">
+    <column id="289" parent="284" name="image_thumb">
       <Position>5</Position>
-      <DataType>int|0s</DataType>
+      <DataType>varchar(20)|0s</DataType>
     </column>
     <key id="290" parent="284" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>

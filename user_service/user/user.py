@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS, cross_origin
 from marshmallow_sqlalchemy import ModelSchema
 from marshmallow import fields
 
 app = Flask(__name__)
+CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:123456@user-mysql/maccshop'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
@@ -62,6 +64,18 @@ def get_user_by_id(id):
     user_schema = UserSchema()
     user = user_schema.dump(get_user)
     return make_response(jsonify({"user": user}))
+
+@app.route('/user/auth/', methods=['POST'])
+def get_user_by_login():
+    user = request.json["user"]
+    password = request.json["password"]
+    get_user = User.query.filter_by(user=user, password=password).first()
+    user_schema = UserSchema()
+    userReturn = user_schema.dump(get_user)
+    status = "Unauthorized"
+    if userReturn:
+        status = "Authorized"
+    return make_response(jsonify({"user": status}))
 
 
 @app.route('/user/<id>', methods=['PUT'])

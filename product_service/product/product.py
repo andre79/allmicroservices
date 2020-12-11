@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS, cross_origin
 from marshmallow_sqlalchemy import ModelSchema
 from marshmallow import fields
 
 app = Flask(__name__)
+CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:123456@product-mysql/maccshop'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
@@ -12,22 +14,23 @@ db = SQLAlchemy(app)
 
 class Product(db.Model):
     __tablename__ = "products"
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    title = db.Column(db.String(255))
-    productDescription = db.Column(db.String(100))
-    productBrand = db.Column(db.String(20))
-    price = db.Column(db.Integer)
+    id          = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name        = db.Column(db.String(255))
+    price       = db.Column(db.String(100))
+    old_price   = db.Column(db.String(100))
+    image_thumb = db.Column(db.String(255))
 
     def create(self):
         db.session.add(self)
         db.session.commit()
         return self
 
-    def __init__(self, title, productDescription, productBrand, price):
-        self.title = title
-        self.productDescription = productDescription
-        self.productBrand = productBrand
-        self.price = price
+    def __init__(self, name, price, old_price, image_thumb):
+        self.name        = name
+        self.price       = price
+        self.old_price   = old_price
+        self.image_thumb = image_thumb
+
 
     def __repr__(self):
         return '' % self.id
@@ -42,10 +45,10 @@ class ProductSchema(ModelSchema):
         sqla_session = db.session
 
     id = fields.Number(dump_only=True)
-    title = fields.String(required=True)
-    productDescription = fields.String(required=True)
-    productBrand = fields.String(required=True)
-    price = fields.Number(required=True)
+    name = fields.String(required=True)
+    price = fields.String(required=True)
+    old_price = fields.String(required=True)
+    image_thumb = fields.String(required=True)
 
 
 @app.route('/products', methods=['GET'])
@@ -68,17 +71,17 @@ def get_product_by_id(id):
 def update_product_by_id(id):
     data = request.get_json()
     get_product = Product.query.get(id)
-    if data.get('title'):
-        get_product.title = data['title']
-    if data.get('productDescription'):
-        get_product.productDescription = data['productDescription']
-    if data.get('productBrand'):
-        get_product.productBrand = data['productBrand']
+    if data.get('name'):
+        get_product.name = data['name']
     if data.get('price'):
         get_product.price = data['price']
+    if data.get('old_price'):
+        get_product.old_price = data['old_price']
+    if data.get('image_thumb'):
+        get_product.image_thumb = data['image_thumb']
     db.session.add(get_product)
     db.session.commit()
-    product_schema = ProductSchema(only=['id', 'title', 'productDescription', 'productBrand', 'price'])
+    product_schema = ProductSchema(only=['id', 'name', 'price', 'old_price', 'image_thumb'])
     product = product_schema.dump(get_product)
     return make_response(jsonify({"product": product}))
 

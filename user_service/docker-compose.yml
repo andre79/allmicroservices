@@ -5,7 +5,7 @@ services:
   container_name: 'user-mysql'
   restart: always
   ports:
-    - 3310:3306
+    - 3311:3306
   environment:
    MYSQL_ROOT_PASSWORD: 123456
    MYSQL_DATABASE: maccshop
@@ -20,7 +20,7 @@ services:
   container_name: 'user-phpmyadmin'
   image: phpmyadmin/phpmyadmin
   environment:
-   PMA_HOST: user-mysql
+   PMA_HOST: auth-mysql
    PMA_PORT: 3306
   ports:
    - 8085:80
@@ -28,7 +28,7 @@ services:
    - microservices
   volumes:
    - /sessions
- 
+
  user-service:
   build: ./user
   container_name: 'user-service'
@@ -44,7 +44,4 @@ services:
 
 networks:
  microservices:
-#networks:
-#  default:
-#    external:
-#      name: product_service_microservices
+  driver: bridge

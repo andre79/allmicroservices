@@ -1,0 +1,18 @@
+version: "3"
+
+ auth-service:
+  build: ./auth
+  container_name: 'auth-service'
+  restart: always
+  networks:
+   - microservices
+  volumes:
+   - ./auth:/usr/src/app
+  ports:
+   - 5001:80
+  depends_on:
+   - product-mysql
+
+networks:
+ microservices:
+  driver: user_service_microservices
