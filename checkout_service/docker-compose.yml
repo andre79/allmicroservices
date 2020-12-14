@@ -45,6 +45,8 @@ services:
 networks:
  microservices:
   driver: bridge
+
+#driver: bridge
 #networks:
 #  default:
 #    external:
