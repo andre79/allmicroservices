@@ -1,6 +1,7 @@
 Flask==0.12
-Flask-RESTful==0.3.8
+Flask-Cors==3.0.9
 Flask-MySQL==1.5.1
+Flask-RESTful==0.3.8
 Flask-SQLAlchemy==2.4.4
 marshmallow==3.9.1
 marshmallow-sqlalchemy==0.24.1
