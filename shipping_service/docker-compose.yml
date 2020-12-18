@@ -1,0 +1,85 @@
+version: "3"
+services:
+ shipping-mysql:
+  image: library/mysql:8.0
+  container_name: 'shipping-mysql'
+  restart: always
+  ports:
+    - 3320:3306
+  environment:
+   MYSQL_ROOT_PASSWORD: 123456
+   MYSQL_DATABASE: maccshop
+   MYSQL_USER: root
+   MYSQL_PASSWORD: root
+  networks:
+   - microservices
+  volumes:
+   - ./data/mysql:/var/lib/mysql
+
+ phpmyadmin:
+  container_name: 'shipping-phpmyadmin'
+  image: phpmyadmin/phpmyadmin
+  environment:
+   PMA_HOST: shipping-mysql
+   PMA_PORT: 3306
+  ports:
+   - 8088:80
+  networks:
+   - microservices
+  volumes:
+   - /sessions
+
+ shipping-service:
+  build: ./shipping
+  container_name: 'shipping-service'
+  restart: always
+  networks:
+   - microservices
+  volumes:
+   - ./shipping:/usr/src/app
+  ports:
+   - 5020:80
+  depends_on:
+   - shipping-mysql
+
+networks:
+ microservices:
+  driver: bridge
+
+#networks:
+#  default:
+#    external:
+#      name: product_service_microservices
+#version: '3'
+
+#services:
+#  mongo-express:
+#    image: mongo-express
+#    ports:
+#      - 8081:8081
+#    environment:
+#      ME_CONFIG_BASICAUTH_USERNAME: renatogroffe
+#      ME_CONFIG_BASICAUTH_PASSWORD: MongoExpress2019!
+#      ME_CONFIG_MONGODB_PORT: 27017
+#      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+#      ME_CONFIG_MONGODB_ADMINPASSWORD: MongoDB2019!
+#    links:
+#      - mongo
+#    networks:
+#      - mongo-compose-network
+#
+#  mongo:
+#    image: mongo
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: root
+#      MONGO_INITDB_ROOT_PASSWORD: MongoDB2019!
+#    ports:
+#      - "27017:27017"
+#    volumes:
+#      - /home/renatogroffe/Desenvolvimento/Docker/Volumes/MongoDB:/data/db
+#    networks:
+#      - mongo-compose-network
+
+#networks:
+#    mongo-compose-network:
+#      driver: bridge

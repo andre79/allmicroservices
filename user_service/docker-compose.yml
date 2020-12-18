@@ -20,7 +20,7 @@ services:
   container_name: 'user-phpmyadmin'
   image: phpmyadmin/phpmyadmin
   environment:
-   PMA_HOST: auth-mysql
+   PMA_HOST: user-mysql
    PMA_PORT: 3306
   ports:
    - 8085:80

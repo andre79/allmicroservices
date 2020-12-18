@@ -67,15 +67,22 @@ def get_user_by_id(id):
 
 @app.route('/user/auth', methods=['POST'])
 def get_user_by_login():
-    user = request.json["user"]
+    email = request.json["email"]
+    if not email:
+        response = jsonify({'message': '(Unauthorized)'})
+        return response, 401
     password = request.json["password"]
-    get_user = User.query.filter_by(user=user, password=password).first()
-    user_schema = UserSchema()
+    if not email:
+        response = jsonify({'message': '(Unauthorized)'})
+        return response, 401
+
+    get_user = User.query.filter_by(email=email, password=password).first()
+    user_schema = UserSchema(exclude=['password'])
     userReturn = user_schema.dump(get_user)
-    status = "Unauthorized"
-    if userReturn:
-        status = "Authorized"
-    return make_response(jsonify({"user": status}))
+    if not userReturn:
+        response = jsonify({'message': '(Unauthorized)'})
+        return response, 401
+    return make_response(jsonify({"user": userReturn}))
 
 
 @app.route('/user/<id>', methods=['PUT'])
@@ -107,6 +114,13 @@ def delete_user_by_id(id):
 
 @app.route('/user', methods=['POST'])
 def create_user():
+    email = request.json["email"]
+    get_user = User.query.filter_by(email=email).first()
+
+    if get_user:
+        response = jsonify({'message': '(E-mail already registered)'})
+        return response, 406
+
     data = request.get_json()
     user_schema = UserSchema()
     user = user_schema.load(data)

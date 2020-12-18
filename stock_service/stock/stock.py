@@ -15,19 +15,16 @@ db = SQLAlchemy(app)
 class Stock(db.Model):
     __tablename__ = "stock"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    address = db.Column(db.String(100))
-    number = db.Column(db.String(100))
-    neighborhood = db.Column(db.String(100))
+    quantity = db.Column(db.Integer)
+
 
     def create(self):
         db.session.add(self)
         db.session.commit()
         return self
 
-    def __init__(self, address, number, neighborhood):
-        self.address = address
-        self.number = number
-        self.neighborhood = neighborhood
+    def __init__(self, quantity):
+        self.quantity = quantity
 
     def __repr__(self):
         return '' % self.id
@@ -42,9 +39,7 @@ class StockSchema(ModelSchema):
         sqla_session = db.session
 
     id = fields.Number(dump_only=True)
-    address = fields.String(required=True)
-    number = fields.String(required=True)
-    neighborhood = fields.String(required=True)
+    quantity = fields.Number(required=True)
 
 
 @app.route('/stock', methods=['GET'])
@@ -67,15 +62,11 @@ def get_stock_by_id(id):
 def update_stock_by_id(id):
     data = request.get_json()
     get_stock = Stock.query.get(id)
-    if data.get('address'):
-        get_stock.address = data['address']
-    if data.get('number'):
-        get_stock.number = data['number']
-    if data.get('neighborhood'):
-        get_stock.neighborhood = data['neighborhood']
+    if data.get('quantity'):
+        get_stock.address = data['quantity']
     db.session.add(get_stock)
     db.session.commit()
-    stock_schema = StockSchema(only=['id', 'address', 'number', 'neighborhood'])
+    stock_schema = StockSchema(only=['id', 'quantity'])
     stock = stock_schema.dump(get_stock)
     return make_response(jsonify({"stock": stock}))
 
