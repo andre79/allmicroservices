@@ -15,19 +15,23 @@ db = SQLAlchemy(app)
 class Delivery(db.Model):
     __tablename__ = "delivery"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    address = db.Column(db.String(100))
-    number = db.Column(db.String(100))
-    neighborhood = db.Column(db.String(100))
+    address = db.Column(db.String(255))
+    number = db.Column(db.String(255))
+    neighborhood = db.Column(db.String(255))
+    name = db.Column(db.String(255))
+    idOrder = db.Column(db.String(255))
 
     def create(self):
         db.session.add(self)
         db.session.commit()
         return self
 
-    def __init__(self, address, number, neighborhood):
+    def __init__(self, address, number, neighborhood, name, idOrder):
         self.address = address
         self.number = number
         self.neighborhood = neighborhood
+        self.name = name
+        self.idOrder = idOrder
 
     def __repr__(self):
         return '' % self.id
@@ -45,6 +49,8 @@ class DeliverySchema(ModelSchema):
     address = fields.String(required=True)
     number = fields.String(required=True)
     neighborhood = fields.String(required=True)
+    name = fields.String(required=True)
+    idOrder = fields.String(required=True)
 
 
 @app.route('/delivery', methods=['GET'])
@@ -73,9 +79,13 @@ def update_delivery_by_id(id):
         get_delivery.number = data['number']
     if data.get('neighborhood'):
         get_delivery.neighborhood = data['neighborhood']
+    if data.get('name'):
+        get_delivery.neighborhood = data['name']
+    if data.get('idOrder'):
+        get_delivery.neighborhood = data['idOrder']
     db.session.add(get_delivery)
     db.session.commit()
-    delivery_schema = DeliverySchema(only=['id', 'address', 'number', 'neighborhood'])
+    delivery_schema = DeliverySchema(only=['id', 'address', 'number', 'neighborhood', 'name', 'idOrder'])
     delivery = delivery_schema.dump(get_delivery)
     return make_response(jsonify({"delivery": delivery}))
 

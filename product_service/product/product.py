@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 from marshmallow_sqlalchemy import ModelSchema
 from marshmallow import fields
+import requests
 
 app = Flask(__name__)
 CORS(app)
@@ -20,6 +21,7 @@ class Product(db.Model):
     old_price   = db.Column(db.String(100))
     image_thumb = db.Column(db.String(255))
     category    = db.Column(db.String(255))
+    quantity    = db.Column(db.Integer)
 
     def create(self):
         db.session.add(self)
@@ -31,7 +33,8 @@ class Product(db.Model):
         self.price       = price
         self.old_price   = old_price
         self.image_thumb = image_thumb
-        self.category = category
+        self.category    = category
+        self.quantity    = category
 
 
     def __repr__(self):
@@ -52,20 +55,23 @@ class ProductSchema(ModelSchema):
     old_price   = fields.String(required=True)
     image_thumb = fields.String(required=True)
     category    = fields.String(required=True)
+    quantity    = fields.Number(required=True)
 
 
 @app.route('/products', methods=['GET'])
 def index():
     get_products = Product.query.all()
     product_schema = ProductSchema(many=True)
-    products = product_schema.dump(get_products)
+    products = product_schema.dump(get_products, )
     return make_response(jsonify({"product": products}))
 
 
 @app.route('/products/<id>', methods=['GET'])
 def get_product_by_id(id):
+    #value = get_stock_by_id(id)
     get_product = Product.query.get(id)
     product_schema = ProductSchema()
+    #get_product.quantity = value
     product = product_schema.dump(get_product)
     return make_response(jsonify({"product": product}))
 
@@ -90,9 +96,11 @@ def update_product_by_id(id):
         get_product.image_thumb = data['image_thumb']
     if data.get('category'):
         get_product.image_thumb = data['category']
+    if data.get('quantity'):
+        get_product.image_thumb = data['quantity']
     db.session.add(get_product)
     db.session.commit()
-    product_schema = ProductSchema(only=['id', 'name', 'price', 'old_price', 'image_thumb', 'category'])
+    product_schema = ProductSchema(only=['id', 'name', 'price', 'old_price', 'image_thumb', 'category', 'quantity'])
     product = product_schema.dump(get_product)
     return make_response(jsonify({"product": product}))
 
@@ -112,6 +120,16 @@ def create_product():
     product = product_schema.load(data)
     result = product_schema.dump(product.create())
     return make_response(jsonify({"product": result}), 200)
+
+#def get_stock_by_id(id):
+    #url = 'http://172.24.0.1:5010/stock/' + str(id)
+    #headers = {'content-type': 'application/json'}
+    #r = requests.get(url, headers=headers)
+    #if not r:
+    #    return 0
+
+    #value = r.json()
+    #return value['stock']['quantity']
 
 
 if __name__ == "__main__":
